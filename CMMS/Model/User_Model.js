@@ -1,5 +1,6 @@
 const { required } = require('joi');
 const mongoose =require('mongoose');
+const { confirmEmail } = require('../Controller/Auth_Controller');
 const userSchema=new mongoose.Schema({
   Fname:{
     type:String,
@@ -14,6 +15,11 @@ const userSchema=new mongoose.Schema({
     required:true,
     trime:true,
     lowercase:true
+  },
+  confirmEmail:{
+    type:Boolean,
+    default:false
+
   },
   password:{
     type:String,
