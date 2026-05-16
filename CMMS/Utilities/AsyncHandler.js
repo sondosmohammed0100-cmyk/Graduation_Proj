@@ -10,7 +10,7 @@ const asyncHandler = (fn) => {
 };
 const globalErrHandler = (err, req, res, next) => {
   return res
-    .status(err.stCode || 400)
+    .status(err.stCode || 500)
     .json({ msg: err.message, stack: err.stack });
 };
 module.exports = { asyncHandler, globalErrHandler };

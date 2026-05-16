@@ -1,19 +1,20 @@
-const JWT=require('jsonwebtoken');
-const asyncHandler=require('../Utilities/AsyncHandler');
-const userModel=require('../Model/User_Model');
-const AppError = require('../Utilities/AppError');
-const auth=
-  async(req,res,next)=>{
-    const authorization=req.headers.authorization;;
-    if(!authorization){
-     next(new AppError("Not authenticatied ",401));
-    }
-    const decoded= await JWT.verify(authorization,process.env.SECRET_KEY);
-    //  console.log(decoded)
-    req.user=decoded.userId;
+const JWT = require("jsonwebtoken");
+const {asyncHandler} = require("../Utilities/AsyncHandler");
+const userModel = require("../Model/User_Model");
+const AppError = require("../Utilities/AppError");
 
-     next();
+
+
+const auth = asyncHandler(async (req, res, next) => {
+  const authorization = req.headers.authorization;
+  if (!authorization) {
+    return next(new AppError("Not authenticatied ", 401));
   }
-;
-module.exports={auth}
+  const decoded = JWT.verify(authorization, process.env.SECRET_KEY);
+  //  console.log(decoded)
+  req.user = decoded.userId;
 
+  next();
+});
+
+module.exports = { auth };

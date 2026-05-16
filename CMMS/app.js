@@ -9,6 +9,12 @@ app.use(express.json());
 const UserRoute=require('./Routes/User_Router');
 app.use('/api',UserRoute);
 
+
+const sendEmail =require('./Utilities/SendEmail')
+
+sendEmail({to:"sundus.mohamed14156@hsc.menofia.edu.eg",subject:"new subject",html:`<p>sondos</p>`});
+
+
 DB_Connection();
 app.use(globalErrHandler);
 const port=process.env.PORT ||3000
