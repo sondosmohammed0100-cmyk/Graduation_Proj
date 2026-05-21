@@ -1,7 +1,7 @@
 const JWT = require("jsonwebtoken");
-const {asyncHandler} = require("../Utilities/AsyncHandler");
+const {asyncHandler} = require("../Utils/AsyncHandler");
 const userModel = require("../Model/User_Model");
-const AppError = require("../Utilities/AppError");
+const AppError = require("../Utils/AppError");
 
 
 
@@ -10,7 +10,7 @@ const auth = asyncHandler(async (req, res, next) => {
   if (!authorization) {
     return next(new AppError("Not authenticatied ", 401));
   }
-  const decoded = JWT.verify(authorization, process.env.SECRET_KEY);
+  const decoded = JWT.verify(authorization, process.env.SECRET_KEY,{algorithm:'HS256'});
   //  console.log(decoded)
   req.user = decoded.userId;
 

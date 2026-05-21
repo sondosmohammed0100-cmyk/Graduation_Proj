@@ -1,6 +1,6 @@
 const express=require('express');
 const DB_Connection=require('./DBConnection/DBConnection')
-const {globalErrHandler}=require('./Utilities/AsyncHandler')
+const {globalErrHandler}=require('./Utils/AsyncHandler')
 const app=express();
 require('dotenv').config()
 const cors=require('cors');
@@ -10,9 +10,9 @@ const UserRoute=require('./Routes/User_Router');
 app.use('/api',UserRoute);
 
 
-const sendEmail =require('./Utilities/SendEmail')
+const sendEmail =require('./Utils/SendEmail')
 
-sendEmail({to:"sundus.mohamed14156@hsc.menofia.edu.eg",subject:"new subject",html:`<p>sondos</p>`});
+// sendEmail({to:"sundus.mohamed14156@hsc.menofia.edu.eg",subject:"new subject",html:`<p>sondos</p>`});
 
 
 DB_Connection();

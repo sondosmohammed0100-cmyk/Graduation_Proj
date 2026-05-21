@@ -1,7 +1,7 @@
 const userModel = require("../Model/User_Model");
-const AppError = require("../Utilities/AppError");
-const sendEmail = require("../Utilities/SendEmail");
-const { asyncHandler } = require("../Utilities/AsyncHandler");
+const AppError = require("../Utils/AppError");
+const sendEmail = require("../Utils/SendEmail");
+const { asyncHandler } = require("../Utils/AsyncHandler");
 const {
   RegisterSchema,
   LoginSchema,
@@ -27,8 +27,8 @@ const Register = asyncHandler(async (req, res, next) => {
     role,
   });
 
-  // console.log(newUser)
-  //Confirm Email
+ //*****************Confirm Email***************************/
+  
   const token = JWT.sign(
     { id: newUser._id, email: newUser.email },
     process.env.EMAIL_SECRET_KEY,
@@ -37,15 +37,20 @@ const Register = asyncHandler(async (req, res, next) => {
   const newConfirmtoken = JWT.sign(
     { id: newUser._id, email: newUser.email },
     process.env.EMAIL_SECRET_KEY,
-    { expiresIn: 60 * 5 },
+    { expiresIn: "1d"},
   );
+
+
+
   const html = `<a href="http://localhost:3000/confirmEmail/${token}">Confirm Email</a>
  <br>
  <br>
  <a href="http://localhost:3000/newconfirmEmail/${newConfirmtoken}">Request new confirm email</a>`;
 
   await sendEmail({ to: email, subject: "Confirm Email", html });
-  const user_res = await userModel.findById(newUser._id).select("-password");
+  const user_res = await userModel.findById(newUser._id).select("-password -__v");
+
+  
   return res.status(201).json({
     msg: "Created Sucessfully",
     UserInfo: user_res,
@@ -54,27 +59,28 @@ const Register = asyncHandler(async (req, res, next) => {
 
 const confirmEmail = asyncHandler(async (req, res, next) => {
   const { token } = req.params;
-  console.log(token);
+  //console.log(token);
   const decoded = JWT.verify(token, process.env.EMAIL_SECRET_KEY);
-  console.log(decoded);
+  //console.log(decoded);
   const user = await userModel.findByIdAndUpdate(decoded.id, {
     confirmEmail: true,
   });
-  return user
-    ? res.redirect(`${req.protocol}://${req.headers.host}/login`)
-    : res.send(
-        `<a href="${req.protocol}://${req.headers.host}/signup">
-        ops click to signup
-      </a>`,
-      );
+return res.json({msg:"Done"})
+//   return user
+//     ? res.redirect(`${req.protocol}://${req.headers.host}/login`)
+//     : res.send(
+//         `<a href="${req.protocol}://${req.headers.host}/signup">
+//         ops click to signup
+//       </a>`,
+//       );
 });
 
 const NewconfirmEmail = asyncHandler(async (req, res, next) => {
   const { token } = req.params;
-  console.log(token);
+  // console.log(token);
   const decoded = JWT.verify(token, process.env.EMAIL_SECRET_KEY);
-  console.log(decoded);
-  const user = await userModel.findById(decoded.id).select("-password");
+  // console.log(decoded);
+  const user = await userModel.findById(decoded.id);
   if (!user) {
     return res.send(
       `<a href="${req.protocol}://${req.headers.host}/signup"> ops click to signup</a>`);
@@ -95,6 +101,15 @@ const NewconfirmEmail = asyncHandler(async (req, res, next) => {
   await sendEmail({ to: user.email, subject: "Confirm Email", html });
   return res.send(`<p>Check your inbox now</p>`);
 });
+
+
+
+
+
+
+
+
+
 
 //======================================Login========================================
 
@@ -126,7 +141,8 @@ const Login = asyncHandler(async (req, res, next) => {
       userId: User._id,
     },
     process.env.SECRET_KEY,
-    { expiresIn: "1h" },
+    { algorithm:'HS256',
+      expiresIn: "1h" },
   );
 
   return res.status(200).json({
