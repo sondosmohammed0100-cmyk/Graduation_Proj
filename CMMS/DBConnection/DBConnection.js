@@ -1,7 +1,7 @@
 const mongoose=require('mongoose');
 
 const DB_Connection=async()=>{
- await mongoose.connect('mongodb://localhost:27017/CMMS'||process.env.DB_URL).then(
+ await mongoose.connect('mongodb://localhost:27017/CMMS'|| process.env.DB_URL).then(
   console.log("Connected to DB")
  ).catch(err=>{
   console.log({msg:"Faild to connect to DB"})

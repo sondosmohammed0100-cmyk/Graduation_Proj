@@ -8,10 +8,10 @@ const sendEmail = async ({from=process.env.EMAIL,to,subject,text,html,attachment
         service: "gmail",
         auth: {
             user: process.env.EMAIL,
-            pass: process.env.EMAIL_PaSSWORD,
+            pass: process.env.EMAIL_PASSWORD,
         },
     });
-
+           
     try {
         const info = await transporter.sendMail({
             from:`"CMMS" <${from}>`,//sender address
