@@ -40,6 +40,9 @@ const userSchema = new mongoose.Schema({
     public_id: String,
     secure_url: String,
 
+  },
+  token:{
+    type:String
   }
 }, { timestamps: true });
 const userModel = mongoose.model("User", userSchema);

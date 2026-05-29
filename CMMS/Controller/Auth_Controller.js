@@ -7,14 +7,22 @@ const {
   LoginSchema,
 } = require("../Validation/Auth_Validation");
 const bcrypt = require("bcrypt");
-const JWT = require("jsonwebtoken");
+
 const cloudinary = require('../Utils/CloudinaryConfig');
-const generateQRCode = require('../Utils/QRcode')
+const generateQRCode = require('../Utils/QRcode');
+const generateToken = require("../Utils/TokenFunction");
 //=================================Register========================================
 
 const Register = asyncHandler(async (req, res, next) => {
+
+  if (!req.body) {
+
+    return next(new AppError('Body is required', 400))
+  }
   const { Fname, Lname, email, password, role } = req.body;
-  //  return console.log(Fname,Lname,email,password,role)
+
+  // return console.log(Fname,Lname,email,password,role)
+
   const existUser = await userModel.findOne({ email });
   if (existUser) {
     return next(new AppError("Email already existing", 409));
@@ -30,17 +38,33 @@ const Register = asyncHandler(async (req, res, next) => {
 
   //*****************Confirm Email***************************/
 
-  const token = JWT.sign(
-    { id: newUser._id, email: newUser.email },
-    process.env.EMAIL_SECRET_KEY,
-    { expiresIn: 60 * 5 },
-  );
-  const newConfirmtoken = JWT.sign(
-    { id: newUser._id, email: newUser.email },
-    process.env.EMAIL_SECRET_KEY,
-    { expiresIn: "1d" },
-  );
+  // const token = JWT.sign(
+  //   { id: newUser._id, email: newUser.email },
+  //   process.env.EMAIL_SECRET_KEY,
+  //   { expiresIn: 60 * 5 },
+  // );
+    const token = generateToken({
+    payload: { id: newUser._id, email: newUser.email },
+    signature: process.env.EMAIL_SECRET_KEY,
+    expiresIn: 60 * 5 
+  });
+  if(!token){
+    next(new AppError('payload is empty',400))
+  }
+  // const newConfirmtoken = JWT.sign(
+  //   { id: newUser._id, email: newUser.email },
+  //   process.env.EMAIL_SECRET_KEY,
+  //   { expiresIn: "1d" },
+  // );
 
+   const newConfirmtoken = generateToken({
+    payload: { id: newUser._id, email: newUser.email },
+    signature: process.env.EMAIL_SECRET_KEY,
+    expiresIn: "1d"
+  });
+  if(!newConfirmtoken){
+    next(new AppError('payload is empty',400))
+  }
 
 
   const html = `<a href="http://localhost:3000/confirmEmail/${token}">Confirm Email</a>
@@ -90,12 +114,16 @@ const NewconfirmEmail = asyncHandler(async (req, res, next) => {
   if (user.confirmEmail) {
     return res.redirect(`${req.protocol}://${req.headers.host}/login`);
   }
-  const Newtoken = JWT.sign(
-    { id: user._id, email: user.email },
-    process.env.EMAIL_SECRET_KEY,
-    { expiresIn: 60 * 2 },
-  );
-
+  // const Newtoken = JWT.sign(
+  //   { id: user._id, email: user.email },
+  //   process.env.EMAIL_SECRET_KEY,
+  //   { expiresIn: 60 * 2 },
+  // );
+  const Newtoken = generateToken({
+    payload:  { id: user._id, email: user.email },
+    signature: process.env.EMAIL_SECRET_KEY,
+    expiresIn: 60 * 2 
+  });
   const html = `<a href="${req.protocol}://${req.headers.host}/confirmEmail/${Newtoken}">Confirm Email
 </a>`;
 
@@ -127,19 +155,34 @@ const Login = asyncHandler(async (req, res, next) => {
   if (!User.confirmEmail) {
     return next(new AppError("Please confirm your email first", 401));
   }
-  const Token = JWT.sign(
-    {
+  // const Token = JWT.sign(
+  //   {
+  //     role: User.role,
+  //     userId: User._id,
+  //   },
+  //   process.env.SECRET_KEY,
+  //   {
+  //     algorithm: 'HS256',
+  //     expiresIn: 20
+  //   },
+  // );
+
+
+  const Token = generateToken({
+    payload: {
       role: User.role,
       userId: User._id,
     },
-    process.env.SECRET_KEY,
-    {
-      algorithm: 'HS256',
-      expiresIn: "1h"
-    },
-  );
-
+    signature: process.env.SECRET_KEY,
+    expiresIn: '1h'
+  });
+  if(!Token){
+    next(new AppError('payload is empty',400))
+  }
+  User.token = Token;
+  await User.save();
   const qrcode = await generateQRCode({ data: User });
+
   return res.status(200).json({
     msg: "Done",
     Token,
