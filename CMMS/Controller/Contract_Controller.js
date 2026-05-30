@@ -83,8 +83,6 @@ const delete_Contract = asyncHandler(
     }
 )
 
-
-
 module.exports = {
     AddingContract,
     getContract,

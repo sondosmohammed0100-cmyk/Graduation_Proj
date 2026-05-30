@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const sysRole=require('../Utils/SystemRoles')
 const userSchema = new mongoose.Schema({
     Fname: {
         type: String,
@@ -33,8 +34,8 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['Admin', 'BiomedicalEngineer', 'Technician', 'Staff'],
-        default: 'Staff'
+        enum: [sysRole.ADMIN, sysRole.BIOENG, sysRole.TECH, sysRole.STAFF],
+        default: sysRole.STAFF
     },
     profile: {
         public_id: String,
