@@ -1,3 +1,6 @@
+const express = require("express");
+const route = express.Router();
+
 const {
   Register,
   Login,
@@ -5,6 +8,8 @@ const {
   NewconfirmEmail,
   profilePicture,
 } = require("../Controller/Auth_Controller");
+
+
 const {
   RegisterSchema,
   LoginSchema,
@@ -12,8 +17,6 @@ const {
 
 
 const { multerCloud, allowedType } = require('../Service/multerCloud');
-const express = require("express");
-const route = express.Router();
 const { auth } = require("../Middelware/Auth_Middelware");
 const validation = require("../Middelware/Validator_Middelware");
 

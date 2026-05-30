@@ -1,4 +1,4 @@
-const JOI = require('JOI');
+const JOI = require('joi');
 const workOrderValidation = {
     body: JOI.object({
         assignedDate: JOI.date().optional(),

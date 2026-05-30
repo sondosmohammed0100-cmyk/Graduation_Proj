@@ -5,14 +5,17 @@ const DepSchema = new mongoose.Schema({
         required: true,
         trim: true,
         minlength: 2,
-        maxlength: 50
+        maxlength: 50,
+        lowercase: true
+        
     },
     location: {
         type: String,
         required: true,
         trim: true,
         minlength: 2,
-        maxlength: 50
+        maxlength: 50,
+        lowercase: true
     }
 }, { timestamps: true });
 

@@ -3,7 +3,8 @@ const contractSchema = new mongoose.Schema({
     nameCompany: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        lowercase: true
     },
     startDate: {
         type: Date,

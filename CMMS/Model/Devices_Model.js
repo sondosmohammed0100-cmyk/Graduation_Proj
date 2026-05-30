@@ -48,11 +48,12 @@ const DeviceSchema = new mongoose.Schema({
     department: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Department',
-        required: true
+        required:true
     },
     maintContract: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Contract'
+        
     }
 }, { timestamps: true });
 

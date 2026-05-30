@@ -1,4 +1,4 @@
-const JOI = require('JOI');
+const JOI = require('joi');
 const maintValidation = {
     body: JOI.object({
         type: JOI.string().valid('Preventive', 'Corrective', 'Calibration', 'Emergency').required(),

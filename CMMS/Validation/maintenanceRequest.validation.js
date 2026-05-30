@@ -1,4 +1,4 @@
-const JOI = require('JOI');
+const JOI = require('joi');
 
 const maintReqValidation = {
     body: JOI.object({

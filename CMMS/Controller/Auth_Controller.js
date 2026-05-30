@@ -56,10 +56,10 @@ const Register = asyncHandler(async (req, res, next) => {
   }
 
 
-  const html = `<a href="http://localhost:3000/confirmEmail/${token}">Confirm Email</a>
+  const html = `<a href="http://localhost:3000/api/confirmEmail/${token}">Confirm Email</a>
  <br>
  <br>
- <a href="http://localhost:3000/newconfirmEmail/${newConfirmtoken}">Request new confirm email</a>`;
+ <a href="http://localhost:3000/api/newconfirmEmail/${newConfirmtoken}">Request new confirm email</a>`;
 
   await sendEmail({ to: email, subject: "Confirm Email", html });
   const user_res = await userModel.findById(newUser._id).select("-password -__v");
@@ -74,7 +74,7 @@ const Register = asyncHandler(async (req, res, next) => {
 const confirmEmail = asyncHandler(async (req, res, next) => {
   const { token } = req.params;
   // console.log(token);
-
+  
   const decoded = VerifyToken({ Token: token, signature: process.env.EMAIL_SECRET_KEY })
 
   if (!decoded) {
@@ -90,14 +90,14 @@ const confirmEmail = asyncHandler(async (req, res, next) => {
 
 
 
-  return res.json({ msg: "Done" })
-  //   return user
-  //     ? res.redirect(`${req.protocol}://${req.headers.host}/login`)
-  //     : res.send(
-  //         `<a href="${req.protocol}://${req.headers.host}/signup">
-  //         ops click to signup
-  //       </a>`,
-  //       );
+  // return res.json({ msg: "Done" })
+    return user
+      ? res.redirect(`${req.protocol}://${req.headers.host}/api/login`)
+      : res.send(
+          `<a href="${req.protocol}://${req.headers.host}/api/register">
+          ops click to signup
+        </a>`,
+        );
 });
 
 const NewconfirmEmail = asyncHandler(async (req, res, next) => {
@@ -114,11 +114,11 @@ const NewconfirmEmail = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(decoded.id);
   if (!user) {
     return res.send(
-      `<a href="${req.protocol}://${req.headers.host}/signup"> ops click to signup</a>`);
+      `<a href="${req.protocol}://${req.headers.host}/api/register"> ops click to signup</a>`);
   }
 
   if (user.confirmEmail) {
-    return res.redirect(`${req.protocol}://${req.headers.host}/login`);
+    return res.redirect(`${req.protocol}://${req.headers.host}/api/login`);
   }
 
   const Newtoken = generateToken({
@@ -126,7 +126,7 @@ const NewconfirmEmail = asyncHandler(async (req, res, next) => {
     signature: process.env.EMAIL_SECRET_KEY,
     expiresIn: 60 * 2
   });
-  const html = `<a href="${req.protocol}://${req.headers.host}/confirmEmail/${Newtoken}">Confirm Email
+  const html = `<a href="${req.protocol}://${req.headers.host}/api/confirmEmail/${Newtoken}">Confirm Email
 </a>`;
 
   await sendEmail({ to: user.email, subject: "Confirm Email", html });
