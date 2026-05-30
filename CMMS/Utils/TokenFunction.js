@@ -1,4 +1,5 @@
 const JWT=require('jsonwebtoken')
+//*****************Generate Token************************ */
 const generateToken=({
     payload={},
     signature=process.env.DEFAULTSIGNITURE,
@@ -11,4 +12,18 @@ const generateToken=({
     const token=JWT.sign(payload,signature,{expiresIn})
     return token;
 }
-module.exports=generateToken;
+//*****************Verify Token************************ */
+const VerifyToken=({
+    Token='',
+    signature=process.env.DEFAULTSIGNITURE,
+    
+}={})=>{
+    
+    if(!Token){
+        return false
+    }
+    const decoded=JWT.verify(Token,signature);
+    
+    return decoded;
+}
+module.exports={generateToken,VerifyToken};

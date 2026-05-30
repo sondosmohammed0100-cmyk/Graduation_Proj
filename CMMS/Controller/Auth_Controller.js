@@ -10,7 +10,7 @@ const bcrypt = require("bcrypt");
 
 const cloudinary = require('../Utils/CloudinaryConfig');
 const generateQRCode = require('../Utils/QRcode');
-const generateToken = require("../Utils/TokenFunction");
+const { generateToken, VerifyToken } = require("../Utils/TokenFunction");
 //=================================Register========================================
 
 const Register = asyncHandler(async (req, res, next) => {
@@ -38,32 +38,24 @@ const Register = asyncHandler(async (req, res, next) => {
 
   //*****************Confirm Email***************************/
 
-  // const token = JWT.sign(
-  //   { id: newUser._id, email: newUser.email },
-  //   process.env.EMAIL_SECRET_KEY,
-  //   { expiresIn: 60 * 5 },
-  // );
-    const token = generateToken({
+
+  const token = generateToken({
     payload: { id: newUser._id, email: newUser.email },
     signature: process.env.EMAIL_SECRET_KEY,
-    expiresIn: 60 * 5 
+    expiresIn: 60 * 5
   });
-  if(!token){
-    next(new AppError('payload is empty',400))
+  if (!token) {
+    next(new AppError('payload is empty', 400))
   }
-  // const newConfirmtoken = JWT.sign(
-  //   { id: newUser._id, email: newUser.email },
-  //   process.env.EMAIL_SECRET_KEY,
-  //   { expiresIn: "1d" },
-  // );
 
-   const newConfirmtoken = generateToken({
+
+  const newConfirmtoken = generateToken({
     payload: { id: newUser._id, email: newUser.email },
     signature: process.env.EMAIL_SECRET_KEY,
     expiresIn: "1d"
   });
-  if(!newConfirmtoken){
-    next(new AppError('payload is empty',400))
+  if (!newConfirmtoken) {
+    next(new AppError('payload is empty', 400))
   }
 
 
@@ -84,9 +76,14 @@ const Register = asyncHandler(async (req, res, next) => {
 
 const confirmEmail = asyncHandler(async (req, res, next) => {
   const { token } = req.params;
-  console.log(token);
-  const decoded = JWT.verify(token, process.env.EMAIL_SECRET_KEY);
-  //console.log(decoded);
+  // console.log(token);
+
+  const decoded = VerifyToken({Token:token, signature:process.env.EMAIL_SECRET_KEY})
+
+  if (!decoded) {
+    return next(new AppError('Decoded faild', 400))
+  }
+
   const user = await userModel.findByIdAndUpdate(decoded.id, {
     confirmEmail: true,
   });
@@ -102,9 +99,15 @@ const confirmEmail = asyncHandler(async (req, res, next) => {
 
 const NewconfirmEmail = asyncHandler(async (req, res, next) => {
   const { token } = req.params;
-  // console.log(token);
-  const decoded = JWT.verify(token, process.env.EMAIL_SECRET_KEY);
-  // console.log(decoded);
+
+
+  const decoded = VerifyToken({Token:token, signature:process.env.EMAIL_SECRET_KEY})
+
+  if (!decoded) {
+    return next(new AppError('Decoded faild', 400))
+  }
+
+
   const user = await userModel.findById(decoded.id);
   if (!user) {
     return res.send(
@@ -114,15 +117,11 @@ const NewconfirmEmail = asyncHandler(async (req, res, next) => {
   if (user.confirmEmail) {
     return res.redirect(`${req.protocol}://${req.headers.host}/login`);
   }
-  // const Newtoken = JWT.sign(
-  //   { id: user._id, email: user.email },
-  //   process.env.EMAIL_SECRET_KEY,
-  //   { expiresIn: 60 * 2 },
-  // );
+  
   const Newtoken = generateToken({
-    payload:  { id: user._id, email: user.email },
+    payload: { id: user._id, email: user.email },
     signature: process.env.EMAIL_SECRET_KEY,
-    expiresIn: 60 * 2 
+    expiresIn: 60 * 2
   });
   const html = `<a href="${req.protocol}://${req.headers.host}/confirmEmail/${Newtoken}">Confirm Email
 </a>`;
@@ -155,18 +154,6 @@ const Login = asyncHandler(async (req, res, next) => {
   if (!User.confirmEmail) {
     return next(new AppError("Please confirm your email first", 401));
   }
-  // const Token = JWT.sign(
-  //   {
-  //     role: User.role,
-  //     userId: User._id,
-  //   },
-  //   process.env.SECRET_KEY,
-  //   {
-  //     algorithm: 'HS256',
-  //     expiresIn: 20
-  //   },
-  // );
-
 
   const Token = generateToken({
     payload: {
@@ -176,8 +163,8 @@ const Login = asyncHandler(async (req, res, next) => {
     signature: process.env.SECRET_KEY,
     expiresIn: '1h'
   });
-  if(!Token){
-    next(new AppError('payload is empty',400))
+  if (!Token) {
+    next(new AppError('payload is empty', 400))
   }
   User.token = Token;
   await User.save();

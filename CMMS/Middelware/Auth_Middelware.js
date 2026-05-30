@@ -1,8 +1,7 @@
-
 const { asyncHandler } = require("../Utils/AsyncHandler");
 const userModel = require("../Model/User_Model");
 const AppError = require("../Utils/AppError");
-const generateToken=require('../Utils/TokenFunction')
+const { generateToken, VerifyToken } = require('../Utils/TokenFunction')
 
 const auth = asyncHandler(async (req, res, next) => {
   const authorization = req.headers.authorization;
@@ -10,7 +9,13 @@ const auth = asyncHandler(async (req, res, next) => {
     return next(new AppError("Not authenticatied ", 401));
   }
   try {
-    const decoded = JWT.verify(authorization, process.env.SECRET_KEY, { algorithm: 'HS256' });
+
+    const decoded = VerifyToken({ Token: authorization, signature: process.env.SECRET_KEY })
+
+    if (!decoded) {
+      return next(new AppError('Decoded faild', 400))
+    }
+
     //  console.log(decoded)
     req.user = decoded.userId;
 
