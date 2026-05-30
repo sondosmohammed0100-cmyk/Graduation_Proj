@@ -6,7 +6,7 @@ const RegisterSchema = {
   email: JOI.string().required().email(),
   password: JOI.string().required(),
   cpassword: JOI.string().required().valid(JOI.ref("password")),
-  role: JOI.string().valid("Admin", "Engineer","Technicion", "User").default("User"),
+  role: JOI.string().valid("Admin", "BiomedicalEngineer", "Technician", "Staff").default("Staff")
 })};
 
 const LoginSchema = {

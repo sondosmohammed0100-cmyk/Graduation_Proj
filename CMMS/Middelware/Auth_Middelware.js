@@ -24,23 +24,23 @@ const auth = asyncHandler(async (req, res, next) => {
       //refresh token
       const findUser = await userModel.findOne({ token: authorization });
       if (!findUser) {
-        next(new AppError('wrong Token', 400))
+        return next(new AppError('wrong Token', 400))
       }
-
       const RefreshToken = generateToken({
         payload: { role: findUser.role, userId: findUser._id, },
-        signature: process.env.process.env.SECRET_KEY,
+        signature: process.env.SECRET_KEY,
         expiresIn: "7d"
       });
+
       if (!RefreshToken) {
-        next(new AppError('payload is empty', 400))
+        return next(new AppError('payload is empty', 400))
       }
 
       findUser.token = RefreshToken;
       await findUser.save();
       return res.status(200).json({ msg: "Token refreshed", RefreshToken })
     }
-    next(new AppError('Invalid Token'), 500)
+    return next(new AppError('Invalid Token'), 500)
   }
 
   next();

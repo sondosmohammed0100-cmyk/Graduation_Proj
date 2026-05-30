@@ -2,15 +2,12 @@ const userModel = require("../Model/User_Model");
 const AppError = require("../Utils/AppError");
 const sendEmail = require("../Utils/SendEmail");
 const { asyncHandler } = require("../Utils/AsyncHandler");
-const {
-  RegisterSchema,
-  LoginSchema,
-} = require("../Validation/Auth_Validation");
 const bcrypt = require("bcrypt");
 
 const cloudinary = require('../Utils/CloudinaryConfig');
 const generateQRCode = require('../Utils/QRcode');
 const { generateToken, VerifyToken } = require("../Utils/TokenFunction");
+
 //=================================Register========================================
 
 const Register = asyncHandler(async (req, res, next) => {
@@ -78,7 +75,7 @@ const confirmEmail = asyncHandler(async (req, res, next) => {
   const { token } = req.params;
   // console.log(token);
 
-  const decoded = VerifyToken({Token:token, signature:process.env.EMAIL_SECRET_KEY})
+  const decoded = VerifyToken({ Token: token, signature: process.env.EMAIL_SECRET_KEY })
 
   if (!decoded) {
     return next(new AppError('Decoded faild', 400))
@@ -87,6 +84,12 @@ const confirmEmail = asyncHandler(async (req, res, next) => {
   const user = await userModel.findByIdAndUpdate(decoded.id, {
     confirmEmail: true,
   });
+  if (!user) {
+    return next(new AppError('User not found', 404));
+  }
+
+
+
   return res.json({ msg: "Done" })
   //   return user
   //     ? res.redirect(`${req.protocol}://${req.headers.host}/login`)
@@ -101,7 +104,7 @@ const NewconfirmEmail = asyncHandler(async (req, res, next) => {
   const { token } = req.params;
 
 
-  const decoded = VerifyToken({Token:token, signature:process.env.EMAIL_SECRET_KEY})
+  const decoded = VerifyToken({ Token: token, signature: process.env.EMAIL_SECRET_KEY })
 
   if (!decoded) {
     return next(new AppError('Decoded faild', 400))
@@ -117,7 +120,7 @@ const NewconfirmEmail = asyncHandler(async (req, res, next) => {
   if (user.confirmEmail) {
     return res.redirect(`${req.protocol}://${req.headers.host}/login`);
   }
-  
+
   const Newtoken = generateToken({
     payload: { id: user._id, email: user.email },
     signature: process.env.EMAIL_SECRET_KEY,
@@ -133,15 +136,8 @@ const NewconfirmEmail = asyncHandler(async (req, res, next) => {
 //======================================Login========================================
 
 const Login = asyncHandler(async (req, res, next) => {
-  const { error, value } = LoginSchema.body.validate(req.body, {
-    abortEarly: false,
-    stripUnknown: true,
-  });
 
-  if (error) {
-    return next(error);
-  }
-  const { email, password } = value;
+  const { email, password } = req.body;
   const User = await userModel.findOne({ email });
   if (!User) {
     return next(new AppError("Please Register first", 401));
@@ -180,7 +176,7 @@ const Login = asyncHandler(async (req, res, next) => {
 const profilePicture = asyncHandler(async (req, res, next) => {
 
   if (!req.file) {
-    return next(new AppError('Please upload a profile picture'), 400);
+    return next(new AppError('Please upload a profile picture', 400));
   }
   const { public_id, secure_url } = await cloudinary.uploader.upload(req.file.path, {
     folder: `Users/Profiles/${req.user}`
