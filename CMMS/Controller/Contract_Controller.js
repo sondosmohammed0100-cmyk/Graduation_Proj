@@ -33,4 +33,62 @@ const getContract = asyncHandler(
 
     }
 );
-module.exports={AddingContract,getContract}
+
+const getContractById = asyncHandler(
+    async (req, res, next) => {
+        const { id } = req.params;
+        const contract = await ContractModel.findById(id);
+        if (!contract)
+            return next(new AppError('Contract not found', 404))
+
+
+        return res.status(200).json({ msg: 'Done', Contract: contract })
+    }
+);
+const updateContract = asyncHandler(
+    async (req, res, next) => {
+        const { id } = req.params;
+        const contract = await ContractModel.findById(id);
+        if (!contract)
+            return next(new AppError('Contract not found', 404));
+
+        const {
+            nameCompany,
+            startDate,
+            endDate,
+            companyPhone } = req.body;
+
+        const updated_contract = await ContractModel.findByIdAndUpdate(id,
+            {
+                nameCompany,
+                startDate,
+                endDate,
+                companyPhone
+            },
+            { new: true }
+        );
+        return res.status(200).json({ msg: "Updated Sucessfully", updated_contract });
+    }
+);
+const delete_Contract = asyncHandler(
+    async (req, res, next) => {
+        const { id } = req.params;
+        const contract = await ContractModel.findById(id);
+        if (!contract)
+            return next(new AppError('Contract not found', 404));
+
+        const ContractDeleted = await ContractModel.findByIdAndDelete(id);
+        return res.status(200).json({ msg: "Contract deleted sucessfully" });
+
+    }
+)
+
+
+
+module.exports = {
+    AddingContract,
+    getContract,
+    delete_Contract,
+    updateContract,
+    getContractById
+}

@@ -74,7 +74,7 @@ const Register = asyncHandler(async (req, res, next) => {
 const confirmEmail = asyncHandler(async (req, res, next) => {
   const { token } = req.params;
   // console.log(token);
-  
+
   const decoded = VerifyToken({ Token: token, signature: process.env.EMAIL_SECRET_KEY })
 
   if (!decoded) {
@@ -91,13 +91,13 @@ const confirmEmail = asyncHandler(async (req, res, next) => {
 
 
   // return res.json({ msg: "Done" })
-    return user
-      ? res.redirect(`${req.protocol}://${req.headers.host}/api/login`)
-      : res.send(
-          `<a href="${req.protocol}://${req.headers.host}/api/register">
+  return user
+    ? res.redirect(`${req.protocol}://${req.headers.host}/api/login`)
+    : res.send(
+      `<a href="${req.protocol}://${req.headers.host}/api/register">
           ops click to signup
         </a>`,
-        );
+    );
 });
 
 const NewconfirmEmail = asyncHandler(async (req, res, next) => {
@@ -191,4 +191,10 @@ const profilePicture = asyncHandler(async (req, res, next) => {
   return res.json({ msg: "Done uploaded", userUpdated })
 });
 
-module.exports = { Register, Login, confirmEmail, profilePicture, NewconfirmEmail };
+module.exports = {
+  Register,
+  Login,
+  confirmEmail,
+  profilePicture,
+  NewconfirmEmail
+};

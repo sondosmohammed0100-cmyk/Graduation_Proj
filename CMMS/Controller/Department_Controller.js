@@ -31,4 +31,56 @@ const getDepartment = asyncHandler(
 
     }
 );
-module.exports = { AddingDepartment, getDepartment };
+
+const getDepartmentById = asyncHandler(
+    async (req, res, next) => {
+        const { id } = req.params;
+        const department = await DepartmentModel.findById(id);
+        if (!department)
+            return next(new AppError('Department not found',404))
+
+
+        return res.status(200).json({ msg: 'Done', Department: department })
+    }
+);
+
+const updateDepartment = asyncHandler(
+    async (req, res, next) => {
+        const { id } = req.params;
+        const department = await DepartmentModel.findById(id);
+        if (!department)
+            return next(new AppError('Department not found',404));
+
+        const { name, location } = req.body;
+
+        const updated_department = await DepartmentModel.findByIdAndUpdate(id,
+            {
+                name,
+                location
+            },
+            { new: true }
+        );
+        return res.status(200).json({ msg: "Updated Sucessfully", updated_department });
+    }
+);
+
+const delete_Department = asyncHandler(
+    async (req, res, next) => {
+        const { id } = req.params;
+        const department = await DepartmentModel.findById(id);
+        if (!department)
+            return next(new AppError('Department not found',404));
+
+        const departmentDeleted = await DepartmentModel.findByIdAndDelete(id);
+        return res.status(200).json({ msg: "Department deleted sucessfully" });
+
+    }
+)
+
+module.exports = {
+    AddingDepartment,
+    getDepartment,
+    getDepartmentById,
+    updateDepartment,
+    delete_Department
+};

@@ -60,7 +60,7 @@ const AddingDevice = asyncHandler(
             msg: "Device added successfully",
             Device: newDevice
         });
-    });
+});
 
 const getDevice = asyncHandler(
     async (req, res, next) => {
@@ -69,23 +69,25 @@ const getDevice = asyncHandler(
 
     }
 );
+
 const getDeviceById = asyncHandler(
     async (req, res, next) => {
         const { id } = req.params;
         const device = await DeviceModel.findById(id);
         if (!device)
-            return next(new AppError('Device not found'), 404)
+            return next(new AppError('Device not found', 404))
 
 
         return res.status(200).json({ msg: 'Done', Device: device })
     }
 );
+
 const updateDevice = asyncHandler(
     async (req, res, next) => {
         const { id } = req.params;
         const device = await DeviceModel.findById(id);
         if (!device)
-            return next(new AppError('Device not found'), 404);
+            return next(new AppError('Device not found', 404));
 
         const { name,
             serialNumber,
@@ -114,18 +116,26 @@ const updateDevice = asyncHandler(
         return res.status(200).json({ msg: "Updated Sucessfully", updated_device });
     }
 );
+
 const delete_Device = asyncHandler(
     async (req, res, next) => {
         const { id } = req.params;
         const device = await DeviceModel.findById(id);
         if (!device)
-            return next(new AppError('Device not found'), 404);
+            return next(new AppError('Device not found', 404));
 
         const deviceDeleted = await DeviceModel.findByIdAndDelete(id);
         return res.status(200).json({ msg: "Device deleted sucessfully" });
 
     }
-)
-module.exports = { AddingDevice, getDevice, getDeviceById, updateDevice, delete_Device };
+);
+
+module.exports = {
+    AddingDevice,
+    getDevice,
+    getDeviceById,
+    updateDevice,
+    delete_Device
+};
 
 
