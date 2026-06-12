@@ -2,7 +2,6 @@ const { asyncHandler } = require("../Utils/AsyncHandler");
 const userModel = require("../Model/User_Model");
 const AppError = require("../Utils/AppError");
 const { generateToken, VerifyToken } = require('../Utils/TokenFunction')
-
 const auth = (roles = []) => {
   return asyncHandler(async (req, res, next) => {
     const authorization = req.headers.authorization;
