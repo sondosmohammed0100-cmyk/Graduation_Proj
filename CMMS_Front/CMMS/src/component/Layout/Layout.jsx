@@ -5,13 +5,15 @@ import Footer from '../Footer/Footer'
 import Navbare from '../Navbare/Navbare'
   import { Outlet } from 'react-router-dom'
 export default function Layout() {
+  return (
+    <>
+      <Navbare />
 
-  return <>
-  <Navbare/>
-  <div className='container my-5'>
-  <Outlet/>
-  </div>
-  <Footer/>
+      <div className="container pt-20">
+        <Outlet />
+      </div>
 
-  </>
+      <Footer />
+    </>
+  )
 }
