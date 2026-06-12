@@ -1,5 +1,4 @@
-// This for connection with the gmail and Authentication
-// Create a transporter using SMTP
+
 const nodemailer = require("nodemailer");
 const sendEmail = async ({from=process.env.EMAIL,to,subject,text,html,attachments=[]}={}) => {
 
