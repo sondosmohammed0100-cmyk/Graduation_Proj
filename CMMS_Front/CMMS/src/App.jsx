@@ -22,7 +22,7 @@ function App() {
         { path: 'devices', element: <Devices /> },
         { path: 'departments', element: <Department /> },
         {path:'maintenance',element:<Maintenance/>},
-        { path: 'order', element: <Order /> },
+        { path: 'orders', element: <Order /> },
         { path: '*', element: <Notfound /> }
 
       ]
