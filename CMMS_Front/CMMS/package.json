@@ -10,13 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@azure/msal-browser": "^5.14.0",
+    "@azure/msal-react": "^5.4.5",
     "@fortawesome/fontawesome-free": "^7.2.0",
+    "@react-oauth/google": "^0.13.5",
     "@tailwindcss/vite": "^4.3.0",
     "axios": "^1.17.0",
     "generate-react-cli": "^11.0.4",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "react-router-dom": "^7.17.0",
+    "react-router-dom": "^7.18.0",
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
