@@ -101,7 +101,7 @@ export default function Login() {
     // TODO: replace with your real API call
     setTimeout(() => {
       setLoading(false);
-      navigate("/dashboard");
+      navigate("/");
     }, 900);
   };
 
