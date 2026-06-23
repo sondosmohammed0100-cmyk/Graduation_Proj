@@ -7,6 +7,19 @@ const app=express();
 const cors=require('cors');
 app.use(cors())
 app.use(express.json());
+/**************************Socket.io Confugration*********************************/
+const {createServer}=require('http');
+const {join}=require('path');
+const { Server } = require('socket.io');
+const server=createServer(app);
+const io=new Server(server,{
+  cors:{
+    origin:"*",
+    methods:["GET","POST"]
+  }
+})
+require('./Sockets/Chat_Socket')(io); 
+
 //****************************Routers**************************************/
 const UserRoute=require('./Routes/User_Router');
 const sendEmail =require('./Utils/SendEmail');
@@ -33,7 +46,7 @@ app.use(globalErrHandler);
 
 /********************************************************************/
 const port=process.env.PORT ||3000
-app.listen(port,()=>{
+server.listen(port,()=>{
   console.log(`Server listen on port---> ${port}`)
 
 });
