@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import bgImage from "../../assets/background.png";
 import api from "../../axios/Axios";
 
-// ── Icons ─────────────────────────────────────────────────────
+
 const GoogleIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" className="w-[18px] h-[18px] shrink-0">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -12,6 +12,7 @@ const GoogleIcon = () => (
     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
   </svg>
 );
+
 
 const MicrosoftIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" className="w-[18px] h-[18px] shrink-0">
@@ -35,7 +36,7 @@ const EyeIcon = ({ open }) =>
       <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
       <line x1="1" y1="1" x2="23" y2="23"/>
     </svg>
-  );
+);
 
 const ArrowRightIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
@@ -45,7 +46,6 @@ const ArrowRightIcon = () => (
   </svg>
 );
 
-// ── Mail icon (للـ success screen) ───────────────────────────
 const MailIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
     strokeLinecap="round" strokeLinejoin="round" className="w-14 h-14 text-blue-500">
@@ -54,11 +54,10 @@ const MailIcon = () => (
   </svg>
 );
 
-// ── Constants ─────────────────────────────────────────────────
 const ROLES = [
-  { value: "BiomedicalEngineer", label: "👨‍⚕️ Biomedical Eng." },
-  { value: "Technician",         label: "🔧 Technician"        },
-  { value: "Staff",              label: "🏥 Staff"              },
+  { value: "BiomedicalEngineer", label: " Biomedical Eng." },
+  { value: "Technician",         label: " Technician"        },
+  { value: "Staff",              label: " Staff"              },
 ];
 
 function getStrength(pwd) {
@@ -73,7 +72,6 @@ const inputCls =
   "text-blue-700 bg-white placeholder-slate-300 outline-none " +
   "transition-all duration-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20";
 
-// ── Component ─────────────────────────────────────────────────
 export default function Register() {
   const navigate = useNavigate();
 
@@ -81,14 +79,16 @@ export default function Register() {
     Fname: "", Lname: "", email: "",
     password: "", cpassword: "", role: "Staff",
   });
-  const [showPwd,    setShowPwd]    = useState(false);
-  const [showCPwd,   setShowCPwd]   = useState(false);
-  const [loading,    setLoading]    = useState(false);
-  const [error,      setError]      = useState("");
+  const [showPwd,       setShowPwd]       = useState(false);
+  const [showCPwd,      setShowCPwd]      = useState(false);
+  const [loading,       setLoading]       = useState(false);
+  const [error,         setError]         = useState("");
 
-  // ← الـ state الجديد: بعد نجاح الـ Register
-  const [registered, setRegistered] = useState(false);
-  const [userEmail,  setUserEmail]  = useState("");
+  const [registered,    setRegistered]    = useState(false);
+  const [userEmail,     setUserEmail]     = useState("");
+  const [confirmToken,  setConfirmToken]  = useState("");   
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMsg,     setResendMsg]     = useState("");
 
   const handleChange = (e) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -107,7 +107,6 @@ export default function Register() {
     return null;
   };
 
-  // ── Submit ────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -117,7 +116,7 @@ export default function Register() {
 
     setLoading(true);
     try {
-      await api.post("/register", {
+      const { data } = await api.post("/register", {
         Fname:     form.Fname,
         Lname:     form.Lname,
         email:     form.email,
@@ -126,15 +125,30 @@ export default function Register() {
         role:      form.role,
       });
 
-      // ✅ نجح الـ Register — اعرض شاشة تأكيد الإيميل
       setUserEmail(form.email);
+      setConfirmToken(data.newConfirmToken);  
       setRegistered(true);
 
     } catch (err) {
-      const msg = err.response?.data?.message || "Server error. Please try again.";
+      const msg = err.response?.data?.message || "Email already exist";
       setError(msg);
     } finally {
       setLoading(false);
+    }
+  };
+
+  
+  const handleResend = async () => {
+    if (!confirmToken) return;
+    setResendLoading(true);
+    setResendMsg("");
+    try {
+      await api.get(`/newconfirmEmail/${confirmToken}`);
+      setResendMsg("Email sent! Check your inbox.");
+    } catch {
+      setResendMsg("Failed to resend. Please register again.");
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -144,9 +158,7 @@ export default function Register() {
 
   const strength = getStrength(form.password);
 
-  // ══════════════════════════════════════════════════════════
-  // ── Success screen — بعد الـ Register بنجاح ──────────────
-  // ══════════════════════════════════════════════════════════
+  
   if (registered) {
     return (
       <div className="relative min-h-[calc(100vh-64px)] overflow-hidden flex items-center justify-center px-4 py-8 font-sans">
@@ -182,7 +194,16 @@ export default function Register() {
             then you can sign in.
           </p>
 
-          {/* زر الانتقال لـ Login */}
+          {/* resend feedback message */}
+          {resendMsg && (
+            <p className={`text-xs mb-4 font-medium ${
+              resendMsg.startsWith("Failed") ? "text-red-400" : "text-green-500"
+            }`}>
+              {resendMsg}
+            </p>
+          )}
+
+          {/* Go to login */}
           <button
             onClick={() => navigate("/login")}
             className="w-full flex items-center justify-center gap-2 py-3
@@ -197,13 +218,15 @@ export default function Register() {
             <ArrowRightIcon />
           </button>
 
+          
           <p className="mt-5 text-xs text-slate-400">
             Didn&apos;t receive the email?{" "}
             <button
-              onClick={() => { setRegistered(false); setError(""); }}
-              className="text-blue-500 font-medium hover:text-blue-700 transition-colors"
+              onClick={handleResend}
+              disabled={resendLoading}
+              className="text-blue-500 font-medium hover:text-blue-700 transition-colors disabled:opacity-50"
             >
-              Try again
+              {resendLoading ? "Sending..." : "Try again"}
             </button>
           </p>
         </div>
@@ -218,9 +241,7 @@ export default function Register() {
     );
   }
 
-  // ══════════════════════════════════════════════════════════
-  // ── Register form ─────────────────────────────────────────
-  // ══════════════════════════════════════════════════════════
+  // Register form
   return (
     <div className="relative min-h-[calc(100vh-64px)] overflow-hidden flex items-center justify-center px-4 py-8 font-sans">
 
