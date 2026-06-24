@@ -13,17 +13,15 @@ const { generateToken, VerifyToken } = require("../Utils/TokenFunction");
 const Register = asyncHandler(async (req, res, next) => {
 
   if (!req.body) {
-
-    return next(new AppError('Body is required', 400))
+    return next(new AppError('Body is required', 400));
   }
   const { Fname, Lname, email, password, role } = req.body;
-
-  // return console.log(Fname,Lname,email,password,role)
 
   const existUser = await userModel.findOne({ email });
   if (existUser) {
     return next(new AppError("Email already existing", 409));
   }
+
   const hashPassword = await bcrypt.hash(password, 8);
   const newUser = await userModel.create({
     Fname,
@@ -35,26 +33,23 @@ const Register = asyncHandler(async (req, res, next) => {
 
   //*****************Confirm Email***************************/
 
-
   const token = generateToken({
     payload: { id: newUser._id, email: newUser.email },
     signature: process.env.EMAIL_SECRET_KEY,
-    expiresIn: 60 * 5
+    expiresIn: 60 * 5,
   });
   if (!token) {
-    next(new AppError('payload is empty', 400))
+    return next(new AppError('payload is empty', 400));
   }
-
 
   const newConfirmtoken = generateToken({
     payload: { id: newUser._id, email: newUser.email },
     signature: process.env.EMAIL_SECRET_KEY,
-    expiresIn: "1d"
+    expiresIn: "1d",
   });
   if (!newConfirmtoken) {
-    next(new AppError('payload is empty', 400))
+    return next(new AppError('payload is empty', 400));
   }
-
 
   const html = `<a href="http://localhost:3000/api/confirmEmail/${token}">Confirm Email</a>
  <br>
@@ -62,23 +57,25 @@ const Register = asyncHandler(async (req, res, next) => {
  <a href="http://localhost:3000/api/newconfirmEmail/${newConfirmtoken}">Request new confirm email</a>`;
 
   await sendEmail({ to: email, subject: "Confirm Email", html });
-  const user_res = await userModel.findById(newUser._id).select("-password -__v");
 
+  const user_res = await userModel.findById(newUser._id).select("-password -__v");
 
   return res.status(201).json({
     msg: "Created Sucessfully",
     UserInfo: user_res,
+    newConfirmToken: newConfirmtoken,   
   });
 });
 
+//=================================Confirm Email===================================
+
 const confirmEmail = asyncHandler(async (req, res, next) => {
   const { token } = req.params;
-  // console.log(token);
 
-  const decoded = VerifyToken({ Token: token, signature: process.env.EMAIL_SECRET_KEY })
+  const decoded = VerifyToken({ Token: token, signature: process.env.EMAIL_SECRET_KEY });
 
   if (!decoded) {
-    return next(new AppError('Decoded faild', 400))
+    return next(new AppError('Decoded faild', 400));
   }
 
   const user = await userModel.findByIdAndUpdate(decoded.id, {
@@ -88,60 +85,61 @@ const confirmEmail = asyncHandler(async (req, res, next) => {
     return next(new AppError('User not found', 404));
   }
 
-
-
-  // return res.json({ msg: "Done" })
   return user
-    ? res.redirect(`${req.protocol}://${req.headers.host}/api/login`)
+    ? res.redirect("http://localhost:5173/login")
     : res.send(
-      `<a href="${req.protocol}://${req.headers.host}/api/register">
+        `<a href="${req.protocol}://${req.headers.host}/api/register">
           ops click to signup
         </a>`,
-    );
+      );
 });
+
+//=================================New Confirm Email===============================
 
 const NewconfirmEmail = asyncHandler(async (req, res, next) => {
   const { token } = req.params;
 
-
-  const decoded = VerifyToken({ Token: token, signature: process.env.EMAIL_SECRET_KEY })
+  const decoded = VerifyToken({ Token: token, signature: process.env.EMAIL_SECRET_KEY });
 
   if (!decoded) {
-    return next(new AppError('Decoded faild', 400))
+    return next(new AppError('Decoded faild', 400));
   }
-
 
   const user = await userModel.findById(decoded.id);
   if (!user) {
     return res.send(
-      `<a href="${req.protocol}://${req.headers.host}/api/register"> ops click to signup</a>`);
+      `<a href="${req.protocol}://${req.headers.host}/api/register"> ops click to signup</a>`,
+    );
   }
 
   if (user.confirmEmail) {
-    return res.redirect(`${req.protocol}://${req.headers.host}/api/login`);
+    return res.redirect("http://localhost:5173/login");
   }
 
   const Newtoken = generateToken({
     payload: { id: user._id, email: user.email },
     signature: process.env.EMAIL_SECRET_KEY,
-    expiresIn: 60 * 2
+    expiresIn: 60 * 2,
   });
-  const html = `<a href="${req.protocol}://${req.headers.host}/api/confirmEmail/${Newtoken}">Confirm Email
-</a>`;
+
+  const html = `<a href="${req.protocol}://${req.headers.host}/api/confirmEmail/${Newtoken}">Confirm Email</a>`;
 
   await sendEmail({ to: user.email, subject: "Confirm Email", html });
+
   return res.send(`<p>Check your inbox now</p>`);
 });
 
-//======================================Login========================================
+//======================================Login=====================================
 
 const Login = asyncHandler(async (req, res, next) => {
 
   const { email, password } = req.body;
+
   const User = await userModel.findOne({ email });
   if (!User) {
     return next(new AppError("Please Register first", 401));
   }
+
   const isMatch = await bcrypt.compare(password, User.password);
   if (!isMatch) {
     return next(new AppError("Email or Password wrong", 400));
@@ -157,38 +155,47 @@ const Login = asyncHandler(async (req, res, next) => {
       userId: User._id,
     },
     signature: process.env.SECRET_KEY,
-    expiresIn: '1h'
+    expiresIn: '1h',
   });
   if (!Token) {
-    next(new AppError('payload is empty', 400))
+    return next(new AppError('payload is empty', 400));
   }
+
   User.token = Token;
   await User.save();
+
   const qrcode = await generateQRCode({ data: User });
 
   return res.status(200).json({
     msg: "Done",
     Token,
-    qrcode
+    qrcode,
   });
 });
+
+//======================================Profile Picture===========================
 
 const profilePicture = asyncHandler(async (req, res, next) => {
 
   if (!req.file) {
     return next(new AppError('Please upload a profile picture', 400));
   }
+
   const { public_id, secure_url } = await cloudinary.uploader.upload(req.file.path, {
-    folder: `Users/Profiles/${req.user}`
-  })
-  const userUpdated = await userModel.findByIdAndUpdate(req.user,
+    folder: `Users/Profiles/${req.user}`,
+  });
+
+  const userUpdated = await userModel.findByIdAndUpdate(
+    req.user,
     { profile: { public_id, secure_url } },
-    { new: true }
-  )
+    { new: true },
+  );
+
   if (!userUpdated) {
-    await cloudinary.uploader.destroy(public_id)
+    await cloudinary.uploader.destroy(public_id);
   }
-  return res.json({ msg: "Done uploaded", userUpdated })
+
+  return res.json({ msg: "Done uploaded", userUpdated });
 });
 
 module.exports = {
@@ -196,5 +203,5 @@ module.exports = {
   Login,
   confirmEmail,
   profilePicture,
-  NewconfirmEmail
+  NewconfirmEmail,
 };
