@@ -2,8 +2,6 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import bgImage from "../../assets/background.png";
 import api from "../../axios/Axios";
-
-
 const GoogleIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" className="w-[18px] h-[18px] shrink-0">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -66,7 +64,6 @@ function getStrength(pwd) {
   if (pwd.length < 10) return { label: "Fair",   width: "w-2/3",  color: "bg-amber-400" };
   return                      { label: "Strong", width: "w-full", color: "bg-green-400" };
 }
-
 const inputCls =
   "w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm " +
   "text-blue-700 bg-white placeholder-slate-300 outline-none " +

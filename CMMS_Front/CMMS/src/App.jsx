@@ -11,19 +11,20 @@ import Devices from './component/Devices/Devices'
 import Department from './component/Department/Department'
 import Order from './component/Order/Order'
 import Maintenance from './component/Maintenance/Maintenance'
+import ProtectedRout from './component/ProtectedRout/ProtectedRout'
 function App() {
   let routes = createBrowserRouter([
     {
       path: "", element: <Layout />, children: [
-        { index: true, element: <Dashboard /> },
+        {index: true, element: <Register /> },
+        { path:"/", element:<ProtectedRout><Dashboard /> </ProtectedRout> },
         { path: 'register', element: <Register /> },
         { path: 'login', element: <Login /> },
-        { path: 'login', element: <Login /> },
-        { path: 'devices', element: <Devices /> },
-        { path: 'departments', element: <Department /> },
-        {path:'maintenance',element:<Maintenance/>},
-        { path: 'orders', element: <Order /> },
-        { path: '*', element: <Notfound /> }
+        { path: 'devices', element: <ProtectedRout><Devices /></ProtectedRout> },
+        { path: 'departments', element:<ProtectedRout><Department /></ProtectedRout>  },
+        {path:'maintenance',element:<ProtectedRout><Maintenance/></ProtectedRout>},
+        { path: 'orders', element: <ProtectedRout><Order /></ProtectedRout> },
+        { path: '*', element:<ProtectedRout> <Notfound /></ProtectedRout> }
 
       ]
     }
