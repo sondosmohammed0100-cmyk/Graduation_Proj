@@ -26,6 +26,7 @@ const sendEmail =require('./Utils/SendEmail');
 const DeviceRouter=require('./Routes/Device_Router');
 const DepartmentRouter=require('./Routes/Department_Router');
 const ContractRouter=require('./Routes/Contract_Router');
+const MaintenanceRouter=require('./Routes/Maintenance_Router')
 
 
 
@@ -34,6 +35,7 @@ app.use('/api',UserRoute);
 app.use('/api',DeviceRouter);
 app.use('/api',DepartmentRouter);
 app.use('/api',ContractRouter);
+app.use('/api',MaintenanceRouter);
 
 
 

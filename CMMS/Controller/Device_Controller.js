@@ -60,15 +60,15 @@ const AddingDevice = asyncHandler(
             msg: "Device added successfully",
             Device: newDevice
         });
-});
+    });
 
 const getDevice = asyncHandler(
     async (req, res, next) => {
-        const Devices = await DeviceModel.find();
-        res.status(200).json({ msg: 'Done', All_Devices: Devices })
-
-    }
-);
+        const Devices = await DeviceModel.find()
+            .populate("department", "name")
+            .populate("maintContract", "nameCompany");
+        res.status(200).json({ msg: 'Done', All_Devices: Devices });
+    });
 
 const getDeviceById = asyncHandler(
     async (req, res, next) => {
@@ -99,6 +99,19 @@ const updateDevice = asyncHandler(
             department,
             maintContract } = req.body;
 
+        const Find_department = await DepartmentModel.findOne({ name: department });
+
+
+        if (!Find_department) {
+            return next(new AppError('Department not found', 404));
+        }
+        const Find_contract = await ContractModel.findOne({ nameCompany: maintContract });
+        if (!Find_contract) {
+            return next(new AppError('Contract not found', 404));
+        }
+
+
+
         const updated_device = await DeviceModel.findByIdAndUpdate(id,
             {
                 name,
@@ -108,8 +121,8 @@ const updateDevice = asyncHandler(
                 status,
                 priority,
                 purchaseDate,
-                department,
-                maintContract
+                department: Find_department._id,
+                maintContract: Find_contract._id
             },
             { new: true }
         );

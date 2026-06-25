@@ -1,33 +1,41 @@
 const mongoose = require('mongoose');
-const workOrderSchema = new mongoose.Schema({
+
+const WorkOrderSchema = new mongoose.Schema({
     assignedDate: {
-        type: Date
+        type: Date,
+        default: Date.now
     },
     completionDate: {
         type: Date
     },
     status: {
         type: String,
-        enum: ['Pending', 'Assigned', 'In Progress', 'Completed', 'Cancelled'],
+        enum: ['Pending', 'In Progress', 'Completed', 'Cancelled'],
         default: 'Pending',
         required: true
     },
+    notes: {
+        type: String,
+        trim: true
+    },
+   
     maintenanceRequest: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'MaintenanceRequest',
         required: true
     },
-    assignedEngineer: {
+    
+    assignedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    assignedTechnician: {
+    
+    assignedTo: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        ref: 'User'
     }
 }, { timestamps: true });
 
-const WorkOrderModel = mongoose.model('WorkOrder', workOrderSchema);
+const WorkOrderModel = mongoose.model('WorkOrder', WorkOrderSchema);
 module.exports = WorkOrderModel;

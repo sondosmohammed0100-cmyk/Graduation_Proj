@@ -33,7 +33,7 @@ const chatController=(io)=>{
       socket.join(`room_Eng ${socket.userId}`)
 
     }
-  //listen(server)------------->emit-------------------------->listen(user)
+  //listen(server)------------->emit----------------->listen(user)
  //user send msg Admin
    socket.on("sendMsg",()=>{
     io.to("Room_Admin").emit("")

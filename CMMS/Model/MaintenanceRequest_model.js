@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const MaintReqSchema = new mongoose.Schema({
     issueDescription: {
         type: String,
@@ -17,13 +18,12 @@ const MaintReqSchema = new mongoose.Schema({
         default: 'Pending',
         required: true
     },
-    
     device: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Device',
         required: true
     },
-    
+   
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
