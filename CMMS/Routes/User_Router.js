@@ -8,7 +8,8 @@ const {
   NewconfirmEmail,
   profilePicture,
   resetpassword,
-  forgetpassword
+  forgetpassword,
+  getProfile
 } = require("../Controller/Auth_Controller");
 
 
@@ -36,4 +37,5 @@ route.post("/reset/:token",validation(ResetSchema),resetpassword);
 
 const upload = multerCloud(allowedType.Image).single('profile')
 route.post("/profile",auth(), upload,profilePicture);
+route.get("/profile", auth(), getProfile);
 module.exports = route;

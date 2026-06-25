@@ -282,6 +282,12 @@ const profilePicture = asyncHandler(async (req, res, next) => {
 
   return res.json({ msg: "Done uploaded", userUpdated });
 });
+//======================Get profile=============================
+const getProfile = asyncHandler(async (req, res, next) => {
+  const user = await userModel.findById(req.user).select("-password -__v -forgetCode -token");
+  if (!user) return next(new AppError("User not found", 404));
+  return res.status(200).json({ msg: "Done", user });
+});
 
 module.exports = {
   Register,
@@ -290,5 +296,6 @@ module.exports = {
   profilePicture,
   NewconfirmEmail,
   forgetpassword,
-  resetpassword
+  resetpassword,
+  getProfile
 };
