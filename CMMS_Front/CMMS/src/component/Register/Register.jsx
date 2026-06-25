@@ -158,12 +158,12 @@ export default function Register() {
   
   if (registered) {
     return (
-      <div className="relative min-h-[calc(100vh-64px)] overflow-hidden flex items-center justify-center px-4 py-8 font-sans">
+      <div className="relative min-h-screen flex items-center justify-center px-4 font-sans">
         <div className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${bgImage})` }}/>
 
         <div
-          className="relative z-20 w-full max-w-[420px] bg-white/95 rounded-2xl px-9 py-10 text-center
+          className="relative z-20 w-full max-w-[420px] bg-white/95 rounded-2xl px-9 py-6 text-center
                      animate-[slideUp_0.45s_cubic-bezier(0.34,1.56,0.64,1)_both]"
           style={{ boxShadow: "0 24px 60px rgba(0,0,0,0.28),0 0 0 1px rgba(255,255,255,0.15)" }}
         >
@@ -240,13 +240,13 @@ export default function Register() {
 
   // Register form
   return (
-    <div className="relative min-h-[calc(100vh-64px)] overflow-hidden flex items-center justify-center px-4 py-8 font-sans">
+    <div className="relative min-h-screen overflow-hidden flex items-center justify-center px-4 py-6 font-sans">
 
       <div className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${bgImage})` }}/>
 
       <div
-        className="relative z-20 w-full max-w-[460px] bg-white/95 rounded-2xl px-9 py-9
+        className="relative z-20 w-full max-w-[460px] bg-white/95 rounded-2xl px-9 py-6
                    animate-[slideUp_0.45s_cubic-bezier(0.34,1.56,0.64,1)_both]"
         style={{ boxShadow: "0 24px 60px rgba(0,0,0,0.28),0 0 0 1px rgba(255,255,255,0.15)" }}
       >

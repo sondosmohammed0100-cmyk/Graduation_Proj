@@ -12,14 +12,21 @@ import Department from './component/Department/Department'
 import Order from './component/Order/Order'
 import Maintenance from './component/Maintenance/Maintenance'
 import ProtectedRout from './component/ProtectedRout/ProtectedRout'
+import ForgotPassword from './component/ForgotPassword/ForgotPassword'
+import ResetPassword from './component/ResetPassword/ResetPassword'
+import Profile from './component/Profile/Profile'
+
 function App() {
   let routes = createBrowserRouter([
     {
       path: "", element: <Layout />, children: [
-        {index: true, element: <Register /> },
-        { path:"/", element:<ProtectedRout><Dashboard /> </ProtectedRout> },
+        
+        { path:"/home", element:<ProtectedRout><Dashboard /> </ProtectedRout> },
         { path: 'register', element: <Register /> },
         { path: 'login', element: <Login /> },
+         { path: "forgot-password",  element: <ForgotPassword /> },          
+        { path: "reset/:token",     element: <ResetPassword /> },
+        { path: "profile", element: <ProtectedRout><Profile /></ProtectedRout> },            
         { path: 'devices', element: <ProtectedRout><Devices /></ProtectedRout> },
         { path: 'departments', element:<ProtectedRout><Department /></ProtectedRout>  },
         {path:'maintenance',element:<ProtectedRout><Maintenance/></ProtectedRout>},
@@ -39,3 +46,5 @@ function App() {
 }
 
 export default App
+
+
