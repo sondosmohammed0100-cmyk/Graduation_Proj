@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const sysRole=require('../Utils/SystemRoles')
+const sysRole = require('../Utils/SystemRoles')
 const userSchema = new mongoose.Schema({
     Fname: {
         type: String,
@@ -43,6 +43,10 @@ const userSchema = new mongoose.Schema({
     },
     token: {
         type: String
+    },
+    forgetCode: {
+        type: String,
+        default: null
     }
 }, { timestamps: true });
 

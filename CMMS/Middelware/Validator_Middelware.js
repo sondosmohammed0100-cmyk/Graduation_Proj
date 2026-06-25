@@ -1,4 +1,3 @@
-const { valid } = require("joi");
 const AppError = require('../Utils/AppError')
 const dataMethods = ['body', 'params', 'query', 'headers', 'file', 'files'];
 const validation = (SchemaValidator) => {
