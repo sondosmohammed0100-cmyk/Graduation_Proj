@@ -1,0 +1,840 @@
+{
+  "info": {
+    "name": "DeviceCare CMMS API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url",        "value": "http://localhost:3000/api" },
+    { "key": "admin_token",     "value": "" },
+    { "key": "bioeng_token",    "value": "" },
+    { "key": "tech_token",      "value": "" },
+    { "key": "staff_token",     "value": "" },
+    { "key": "device_id",       "value": "" },
+    { "key": "department_id",   "value": "" },
+    { "key": "contract_id",     "value": "" },
+    { "key": "maint_req_id",    "value": "" },
+    { "key": "work_order_id",   "value": "" },
+    { "key": "maintenance_id",  "value": "" },
+    { "key": "reset_token",     "value": "" }
+  ],
+  "item": [
+
+    {
+      "name": "01 - Auth",
+      "item": [
+        {
+          "name": "Register - Staff",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Fname\": \"Sara\",\n  \"Lname\": \"Ahmed\",\n  \"email\": \"sara.staff@hospital.org\",\n  \"password\": \"password123\",\n  \"cpassword\": \"password123\",\n  \"role\": \"Staff\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register - BiomedicalEngineer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Fname\": \"Ahmed\",\n  \"Lname\": \"Mostafa\",\n  \"email\": \"ahmed.bioeng@hospital.org\",\n  \"password\": \"password123\",\n  \"cpassword\": \"password123\",\n  \"role\": \"BiomedicalEngineer\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register - Technician",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Fname\": \"Khaled\",\n  \"Lname\": \"Ibrahim\",\n  \"email\": \"khaled.tech@hospital.org\",\n  \"password\": \"password123\",\n  \"cpassword\": \"password123\",\n  \"role\": \"Technician\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register - Admin",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Fname\": \"Admin\",\n  \"Lname\": \"User\",\n  \"email\": \"admin@hospital.org\",\n  \"password\": \"password123\",\n  \"cpassword\": \"password123\",\n  \"role\": \"Admin\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register - Missing Fields (should fail 400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Fname\": \"Test\",\n  \"email\": \"test@hospital.org\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register - Duplicate Email (should fail 409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Fname\": \"Sara\",\n  \"Lname\": \"Ahmed\",\n  \"email\": \"sara.staff@hospital.org\",\n  \"password\": \"password123\",\n  \"cpassword\": \"password123\",\n  \"role\": \"Staff\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login - Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.Token) pm.collectionVariables.set('admin_token', res.Token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@hospital.org\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login - BiomedicalEngineer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.Token) pm.collectionVariables.set('bioeng_token', res.Token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ahmed.bioeng@hospital.org\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login - Technician",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.Token) pm.collectionVariables.set('tech_token', res.Token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"khaled.tech@hospital.org\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login - Staff",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.Token) pm.collectionVariables.set('staff_token', res.Token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sara.staff@hospital.org\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login - Wrong Password (should fail 400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@hospital.org\",\n  \"password\": \"wrongpass\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login - Not Registered (should fail 401)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ghost@hospital.org\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/profile"
+          }
+        },
+        {
+          "name": "Forget Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/forget",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@hospital.org\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/reset/{{reset_token}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newPassword\": \"newpassword123\"\n}"
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "02 - Departments",
+      "item": [
+        {
+          "name": "Add Department (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.Department) pm.collectionVariables.set('department_id', res.Department._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": "{{base_url}}/department",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ICU\",\n  \"location\": \"Floor 2 - Block A\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Add Department - Duplicate (should fail 409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": "{{base_url}}/department",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ICU\",\n  \"location\": \"Floor 2 - Block A\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Add Department - Non Admin (should fail 403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{staff_token}}" }
+            ],
+            "url": "{{base_url}}/department",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Radiology\",\n  \"location\": \"Floor 1\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Departments",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/department"
+          }
+        },
+        {
+          "name": "Get Department By Id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/department/{{department_id}}"
+          }
+        },
+        {
+          "name": "Update Department (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": "{{base_url}}/department/{{department_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ICU\",\n  \"location\": \"Floor 3 - Block B\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Department (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/department/{{department_id}}"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "03 - Contracts",
+      "item": [
+        {
+          "name": "Add Contract (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.ContractDetails) pm.collectionVariables.set('contract_id', res.ContractDetails._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": "{{base_url}}/contract",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameCompany\": \"Philips Medical\",\n  \"startDate\": \"2024-01-01\",\n  \"endDate\": \"2026-12-31\",\n  \"companyPhone\": \"+20123456789\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Add Contract - Duplicate (should fail 409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": "{{base_url}}/contract",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameCompany\": \"Philips Medical\",\n  \"startDate\": \"2024-01-01\",\n  \"endDate\": \"2026-12-31\",\n  \"companyPhone\": \"+20123456789\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Contracts",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/contract"
+          }
+        },
+        {
+          "name": "Get Contract By Id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/contract/{{contract_id}}"
+          }
+        },
+        {
+          "name": "Update Contract (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": "{{base_url}}/contract/{{contract_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameCompany\": \"Philips Medical\",\n  \"startDate\": \"2024-01-01\",\n  \"endDate\": \"2027-12-31\",\n  \"companyPhone\": \"+20111222333\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Contract (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/contract/{{contract_id}}"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "04 - Devices",
+      "item": [
+        {
+          "name": "Add Device (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.Device) pm.collectionVariables.set('device_id', res.Device._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": "{{base_url}}/device",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ventilator\",\n  \"serialNumber\": \"SN-PH-2021-4421\",\n  \"manufacturer\": \"Philips\",\n  \"supplier\": \"MedSupply\",\n  \"status\": \"Working\",\n  \"priority\": \"Critical\",\n  \"purchaseDate\": \"2021-06-15\",\n  \"department\": \"icu\",\n  \"maintContract\": \"philips medical\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Add Device - Duplicate (should fail 409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": "{{base_url}}/device",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ventilator\",\n  \"serialNumber\": \"SN-PH-2021-4421\",\n  \"manufacturer\": \"Philips\",\n  \"supplier\": \"MedSupply\",\n  \"status\": \"Working\",\n  \"priority\": \"Critical\",\n  \"purchaseDate\": \"2021-06-15\",\n  \"department\": \"icu\",\n  \"maintContract\": \"philips medical\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Add Device - Non Admin (should fail 403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{staff_token}}" }
+            ],
+            "url": "{{base_url}}/device",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"MRI Scanner\",\n  \"serialNumber\": \"SN-SI-2019-0852\",\n  \"department\": \"icu\",\n  \"maintContract\": \"philips medical\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Devices",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/device"
+          }
+        },
+        {
+          "name": "Get Device By Id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/device/{{device_id}}"
+          }
+        },
+        {
+          "name": "Update Device (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": "{{base_url}}/device/{{device_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ventilator\",\n  \"serialNumber\": \"SN-PH-2021-4421\",\n  \"status\": \"Maintenance\",\n  \"priority\": \"Critical\",\n  \"department\": \"icu\",\n  \"maintContract\": \"philips medical\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Device (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/device/{{device_id}}"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "05 - Maintenance Requests",
+      "item": [
+        {
+          "name": "Create Request (Staff)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.Request) pm.collectionVariables.set('maint_req_id', res.Request._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{staff_token}}" }
+            ],
+            "url": "{{base_url}}/maintenance-request",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"issueDescription\": \"Ventilator is making abnormal noise and showing error code E-401\",\n  \"priority\": \"Emergency\",\n  \"device\": \"{{device_id}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Request - Non Staff (should fail 403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tech_token}}" }
+            ],
+            "url": "{{base_url}}/maintenance-request",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"issueDescription\": \"Device issue description here\",\n  \"priority\": \"Normal\",\n  \"device\": \"{{device_id}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Request - Short Description (should fail 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{staff_token}}" }
+            ],
+            "url": "{{base_url}}/maintenance-request",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"issueDescription\": \"Bad\",\n  \"priority\": \"Normal\",\n  \"device\": \"{{device_id}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Requests (BiomedEng)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bioeng_token}}" }],
+            "url": "{{base_url}}/maintenance-request"
+          }
+        },
+        {
+          "name": "Get Request By Id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bioeng_token}}" }],
+            "url": "{{base_url}}/maintenance-request/{{maint_req_id}}"
+          }
+        },
+        {
+          "name": "Update Request Status (BiomedEng)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{bioeng_token}}" }
+            ],
+            "url": "{{base_url}}/maintenance-request/{{maint_req_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Request (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/maintenance-request/{{maint_req_id}}"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "06 - Work Orders",
+      "item": [
+        {
+          "name": "Create Work Order (BiomedEng)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.WorkOrder) pm.collectionVariables.set('work_order_id', res.WorkOrder._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{bioeng_token}}" }
+            ],
+            "url": "{{base_url}}/work-order",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maintenanceRequest\": \"{{maint_req_id}}\",\n  \"assignedTo\": \"PUT_TECHNICIAN_USER_ID_HERE\",\n  \"notes\": \"Inspect the ventilator motor and replace if needed\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Work Order - Duplicate (should fail 409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{bioeng_token}}" }
+            ],
+            "url": "{{base_url}}/work-order",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maintenanceRequest\": \"{{maint_req_id}}\",\n  \"notes\": \"Duplicate work order\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Work Order - Non BiomedEng (should fail 403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{staff_token}}" }
+            ],
+            "url": "{{base_url}}/work-order",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maintenanceRequest\": \"{{maint_req_id}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Work Orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bioeng_token}}" }],
+            "url": "{{base_url}}/work-order"
+          }
+        },
+        {
+          "name": "Get Work Order By Id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bioeng_token}}" }],
+            "url": "{{base_url}}/work-order/{{work_order_id}}"
+          }
+        },
+        {
+          "name": "Update Work Order - In Progress (BiomedEng)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{bioeng_token}}" }
+            ],
+            "url": "{{base_url}}/work-order/{{work_order_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maintenanceRequest\": \"{{maint_req_id}}\",\n  \"status\": \"In Progress\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Work Order - Completed (BiomedEng)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{bioeng_token}}" }
+            ],
+            "url": "{{base_url}}/work-order/{{work_order_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maintenanceRequest\": \"{{maint_req_id}}\",\n  \"status\": \"Completed\",\n  \"completionDate\": \"2026-05-01\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Work Order (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/work-order/{{work_order_id}}"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "07 - Maintenance Records",
+      "item": [
+        {
+          "name": "Create Maintenance Record (Technician)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.Maintenance) pm.collectionVariables.set('maintenance_id', res.Maintenance._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tech_token}}" }
+            ],
+            "url": "{{base_url}}/maintenance",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Corrective\",\n  \"maintenanceDate\": \"2026-04-28\",\n  \"status\": \"In Progress\",\n  \"notes\": \"Replaced motor fan and cleaned filters\",\n  \"device\": \"{{device_id}}\",\n  \"workOrder\": \"{{work_order_id}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Maintenance - Non Technician (should fail 403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{staff_token}}" }
+            ],
+            "url": "{{base_url}}/maintenance",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Corrective\",\n  \"device\": \"{{device_id}}\",\n  \"workOrder\": \"{{work_order_id}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Maintenance Records",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/maintenance"
+          }
+        },
+        {
+          "name": "Get Maintenance Record By Id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/maintenance/{{maintenance_id}}"
+          }
+        },
+        {
+          "name": "Update Maintenance - Completed (Technician)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tech_token}}" }
+            ],
+            "url": "{{base_url}}/maintenance/{{maintenance_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Completed\",\n  \"notes\": \"Motor replaced and device tested successfully\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Maintenance Record (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/maintenance/{{maintenance_id}}"
+          }
+        }
+      ]
+    }
+
+  ]
+}
